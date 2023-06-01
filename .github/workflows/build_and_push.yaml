@@ -26,7 +26,9 @@ jobs:
 
       - name: Extract commit SHA
         id: extract-sha
-        run: echo "::set-output name=SHA_SHORT::${{ github.sha:0:7 }}"
+        run: |
+          echo "::set-output name=SHA_SHORT::${{ github.sha }}"
+          echo "::set-output name=SHA_SHORT::${{ steps.extract-sha.outputs.SHA_SHORT:0:7 }}"
 
       - name: Build and push client image
         uses: docker/build-push-action@v2
