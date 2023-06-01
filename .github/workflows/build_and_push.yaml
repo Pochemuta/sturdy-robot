@@ -24,13 +24,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Extract commit SHA
+        id: extract-sha
+        run: echo "::set-output name=SHA_SHORT::${{ github.sha:0:7 }}"
+
       - name: Build and push client image
         uses: docker/build-push-action@v2
         with:
           context: .
           file: Dockerfile.client
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/client::${{ github.sha }}:7
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/client:${{ steps.extract-sha.outputs.SHA_SHORT }}
 
       - name: Build and push server image
         uses: docker/build-push-action@v2
@@ -38,4 +42,4 @@ jobs:
           context: .
           file: Dockerfile.server
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/server::${{ github.sha }}:7
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/server:${{ steps.extract-sha.outputs.SHA_SHORT }}
