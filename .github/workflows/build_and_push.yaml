@@ -27,8 +27,7 @@ jobs:
       - name: Extract commit SHA
         id: extract-sha
         run: |
-          echo "::set-output name=SHA_SHORT::${{ github.sha }}"
-          echo "::set-output name=SHA_SHORT::${{ steps.extract-sha.outputs.SHA_SHORT:0:7 }}"
+          echo "::set-env name=SHA_SHORT::$(echo ${{ github.sha }} | cut -c1-7)"
 
       - name: Build and push client image
         uses: docker/build-push-action@v2
@@ -36,7 +35,7 @@ jobs:
           context: .
           file: Dockerfile.client
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/client:${{ steps.extract-sha.outputs.SHA_SHORT }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/client:${{ env.SHA_SHORT }}
 
       - name: Build and push server image
         uses: docker/build-push-action@v2
@@ -44,4 +43,4 @@ jobs:
           context: .
           file: Dockerfile.server
           push: true
-          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/server:${{ steps.extract-sha.outputs.SHA_SHORT }}
+          tags: ghcr.io/${{ env.OWNER_LC }}/${{ github.event.repository.name }}/server:${{ env.SHA_SHORT }}
